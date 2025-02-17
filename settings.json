@@ -1,0 +1,6 @@
+{
+  "welcomeMessage": "selamat datang @user! untuk memudahkan mu bermain toram silahkan ketik !menu\n\n\nsalam hangat kami para admin\n",
+  "leftMessage": "Goodbye @user!",
+  "menuMessage": "┏━🔥 *BOT MENU* 🔥━┓\n┣ 📌 *Admin Commands:*\n┃ ➥ ${prefix}promote @user\n┃ ➥ ${prefix}demote @user\n┣━━━━━━━✦━━━━━━━┫\n┣ 🎮 *Have Fun:*\n┃ ➥ ${prefix}hoki\n┃ ➥ ${prefix}pedo\n┃ ➥ ${prefix}guy\n┣━━━━━━━✦━━━━━━━┫\n┣ 🎥 *Group:*\n┃ ➥ ${prefix}tagall [pesan]\n┃ ➥ ${prefix}hidetag [pesan]\n┣━━━━━━━✦━━━━━━━┫\n┣ ⚔️ *Toram Online:*\n┃ ➥ ${prefix}bufflist\n┃ ➥ ${prefix}lbs\n┃ ➥ ${prefix}arrow\n┃ ➥ ${prefix}leveling\n┗━━━━━━━━━━━━━━━━┛",
+  "menuImage": "uploads/menu.jpg"
+}

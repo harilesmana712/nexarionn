@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Pesan Welcome</title>
+    <style type="text/css">
+        body {
+            width: 600px;
+            max-width: 100%;
+            margin: 0 auto;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        h1, h3 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .textarea, input, select, button {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .send {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .send:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <%- include('partials/header') %>
+    <div class="container">
+        <h2>Pengaturan Menu Bot</h2>
+
+        <!-- Tampilan Gambar -->
+        <div class="image-preview">
+            <img src="<%= menuImage %>" alt="Menu Image" width="200">
+        </div>
+
+        <!-- Form Edit Menu -->
+        <form action="/update-menu" method="POST" enctype="multipart/form-data">
+            <label for="response">Teks Respons:</label>
+            <textarea class="textarea" id="response" name="response" rows="4" required><%= menuResponse %></textarea>
+
+            <label for="image">Upload Gambar Baru:</label>
+            <input type="file" id="image" name="image" accept="image/*">
+
+            <button type="submit">Simpan Perubahan</button>
+        </form>
+    </div>
+</body>
+</html>

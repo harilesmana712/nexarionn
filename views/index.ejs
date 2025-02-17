@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Bot Settings</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        textarea, input[type="file"], button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            resize: vertical;
+        }
+
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h2>WhatsApp Bot Settings</h2>
+    <div class="container">
+        <form id="welcomeForm">
+            <label for="welcomeMessage">Welcome Message:</label>
+            <textarea id="welcomeMessage" name="message" required><%= welcomeMessage %></textarea>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div class="container">
+        <form id="leftForm">
+            <label for="leftMessage">Left Message:</label>
+            <textarea id="leftMessage" name="message" required><%= leftMessage %></textarea>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div class="container">
+        <form id="menuForm">
+            <label for="menuMessage">Menu Message:</label>
+            <textarea id="menuMessage" name="message" required><%= menuMessage %></textarea>
+            <button type="submit">Update</button>
+        </form>
+    </div>
+    <div class="container">
+        <form id="menuImageForm" enctype="multipart/form-data">
+            <label for="menuImage">Menu Image:</label>
+            <input type="file" id="menuImage" name="menuImage" accept="image/*" required>
+            <button type="submit">Upload</button>
+        </form>
+    </div>
+		    <div class="container">
+				
+		<form id="addCaseForm">
+    <label for="command">Command:</label><br>
+    <input type="text" id="command" name="command" required><br>
+
+    <label for="response">Response:</label><br>
+    <textarea type="text" id="response" name="response" required></textarea><br>
+
+    <button type="submit">Add Case</button>
+			<h2>Custom Cases</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Command</th>
+                        <th>Response</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="caseList">
+                    <% for (const [command, response] of Object.entries(customCases)) { %>
+                        <tr>
+                            <td><%= command %></td>
+                            <td><%= response %></td>
+                            <td>
+                                <button onclick="deleteCase('<%= command %>')">Delete</button>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+</form>
+				 </div>
+    <div class="container">
+        <h3>Current Menu Image:</h3>
+        <img id="currentMenuImage" src="/<%= menuImage %>" alt="Menu Image">
+    </div>
+    <script>
+            function deleteCase(command) {
+        if (confirm(`Are you sure you want to delete '${command}'?`)) {
+            fetch('/delete-case', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command })
+            }).then(response => response.json())
+              .then(data => {
+                  alert(data.message);
+                  location.reload();
+              }).catch(error => console.error('Error:', error));
+        }
+    }
+        $(document).ready(function() {
+            $("#welcomeForm").submit(function(e) {
+                e.preventDefault();
+                $.post('/set-welcome', { message: $("#welcomeMessage").val() }, function(response) {
+                    alert(response.message);
+                });
+            });
+
+            $("#leftForm").submit(function(e) {
+                e.preventDefault();
+                $.post('/set-left', { message: $("#leftMessage").val() }, function(response) {
+                    alert(response.message);
+                });
+            });
+
+            $("#menuForm").submit(function(e) {
+                e.preventDefault();
+                $.post('/set-menu', { message: $("#menuMessage").val() }, function(response) {
+                    alert(response.message);
+                });
+            });
+    document.getElementById('addCaseForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const command = document.getElementById('command').value.trim();
+        const response = document.getElementById('response').value.trim();
+
+        if (!command || !response) {
+            alert("Please fill out all fields.");
+            return;
+        }
+
+        try {
+            const res = await fetch('/add-case', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ command, response })
+            });
+
+            const data = await res.json();
+            alert(data.message);
+        } catch (error) {
+            alert("Error adding case.");
+            console.error(error);
+        }
+    });
+            $("#menuImageForm").submit(function(e) {
+                e.preventDefault();
+                let formData = new FormData(this);
+                $.ajax({
+                    url: '/upload-menu-image',
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        alert(response.message);
+                        $("#currentMenuImage").attr("src", "/" + response.imagePath);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
