@@ -9,7 +9,7 @@ const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const PREFIXES = ['!', '.', '#', '/' ,['$'];
+const PREFIXES = ['!', '.', '#', '/' , '$'];
 
 // Load settings from file
 const settingsPath = path.join(__dirname, 'settings.json');
