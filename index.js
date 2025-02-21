@@ -42,15 +42,35 @@ async function startBot() {
             console.log('Bot connected!');
         }
     });
+sock.ev.on('group-participants.update', async (update) => {
+    const { id, participants, action } = update;
+    for (const participant of participants) {
+        const username = `@${participant.split('@')[0]}`;
+        const message = action === 'add' ? settings.welcomeMessage : settings.leftMessage;
+        const renderedMessage = message.replace('@user', username);
 
-    sock.ev.on('group-participants.update', async (update) => {
-        const { id, participants, action } = update;
-        for (const participant of participants) {
-            const message = action === 'add' ? settings.welcomeMessage : settings.leftMessage;
-            const renderedMessage = message.replace('@user', `@${participant.split('@')[0]}`);
-            await sock.sendMessage(id, { text: renderedMessage, mentions: [participant] });
+   try {
+            // Coba ambil foto profil
+            const profilePicUrl = await sock.profilePictureUrl(participant, 'image');
+            const profilePicBuffer = await fetch(profilePicUrl).then(res => res.arrayBuffer());
+
+            // Kirim pesan sambutan dengan foto profil
+            await sock.sendMessage(id, {
+                image: Buffer.from(profilePicBuffer),
+                caption: renderedMessage,
+                mentions: [participant]
+            });
+        } catch (err) {
+            console.log(`Gagal mengambil foto profil: ${err}`);
+
+            // Jika gagal ambil foto profil, kirim pesan teks saja
+            await sock.sendMessage(id, {
+                text: renderedMessage,
+                mentions: [participant]
+            });
         }
-    });
+    }
+});
 
     sock.ev.on('messages.upsert', async (m) => {
       const msg = m.messages[0];
